@@ -32,18 +32,23 @@ RUN LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php && \
   apt-get -y upgrade && \
   apt-get -y install postfix python3-setuptools wget git apache2 php${PHP_VERSION}-xdebug libapache2-mod-php${PHP_VERSION} mysql-server php${PHP_VERSION}-mysql pwgen php${PHP_VERSION}-apcu php${PHP_VERSION}-gd php${PHP_VERSION}-xml php${PHP_VERSION}-mbstring zip unzip php${PHP_VERSION}-zip curl php${PHP_VERSION}-curl && \
   apt-get -y autoremove && \
-  apt-get -y clean && \
-  echo "ServerName localhost"           >> /etc/apache2/apache2.conf && \
-  echo "<Directory '/var/www/html'>"    >> /etc/apache2/apache2.conf && \
-  echo "    Options +ExecCGI"           >> /etc/apache2/apache2.conf && \
-  echo "    AddHandler cgi-script .cgi" >> /etc/apache2/apache2.conf && \
-  echo "</Directory>"                   >> /etc/apache2/apache2.conf && \
-  echo "<Directory '/app'>"             >> /etc/apache2/apache2.conf && \
-  echo "    Options +ExecCGI"           >> /etc/apache2/apache2.conf && \
-  echo "    AddHandler cgi-script .cgi" >> /etc/apache2/apache2.conf && \
-  echo "</Directory>"                   >> /etc/apache2/apache2.conf 
+  apt-get -y clean
+
+RUN echo "ServerName localhost"           >> /etc/apache2/apache2.conf && \
+    echo "AddHandler cgi-script .cgi"     >> /etc/apache2/apache2.conf && \
+    echo "<Directory \"/var/www/html\">"  >> /etc/apache2/apache2.conf && \
+    echo "    Options +ExecCGI"           >> /etc/apache2/apache2.conf && \
+    echo "    AddHandler cgi-script .cgi" >> /etc/apache2/apache2.conf && \
+    echo "</Directory>"                   >> /etc/apache2/apache2.conf && \
+    echo "<Directory \"/app\">"           >> /etc/apache2/apache2.conf && \
+    echo "    Options +ExecCGI"           >> /etc/apache2/apache2.conf && \
+    echo "    AddHandler cgi-script .cgi" >> /etc/apache2/apache2.conf && \
+    echo "</Directory>"                   >> /etc/apache2/apache2.conf 
                                           
-                                          
+RUN ln -s ../mods-available/cgi.load  /etc/apache2/mods-enabled/cgi.load
+RUN ln -s ../mods-available/cgid.load /etc/apache2/mods-enabled/cgid.load
+RUN ln -s ../mods-available/cgid.conf /etc/apache2/mods-enabled/cgid.conf
+
 # Install supervisor 4
 RUN curl -L https://pypi.io/packages/source/s/supervisor/supervisor-${SUPERVISOR_VERSION}.tar.gz | tar xvz && \
   cd supervisor-${SUPERVISOR_VERSION}/ && \
@@ -88,6 +93,9 @@ ADD app/ /app
 #Environment variables to configure php
 ENV PHP_UPLOAD_MAX_FILESIZE 10M
 ENV PHP_POST_MAX_SIZE 10M
+
+#COPY app/all.cgi    /usr/lib/cgi-bin/all.cgi
+#COPY app/search.cgi /usr/lib/cgi-bin/search.cgi
 
 # Add volumes for the app and MySql
 VOLUME  ["/var/lib/mysql", "/app" ]
