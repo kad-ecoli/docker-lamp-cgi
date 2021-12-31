@@ -1,4 +1,4 @@
-# ![Docker-LAMP][logo]
+## Introduction
 Docker-LAMP-CGI is a fork of [Docker-LAMP](https://github.com/mattrayner/docker-lamp) by Matt Rayner. It is a docker image that include the phusion baseimage (20.04 variety), along with a LAMP stack ([Apache][apache], [MySQL][mysql] and [PHP][php]) all in one handy package. Compared to the upstream version, Docker-LAMP-CGI adds support to CGI scripts.
 
 [![Build Status][shield-build-status]][info-build-status]
